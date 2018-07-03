@@ -1,3 +1,4 @@
+
 var handler = require('../request-handler');
 var expect = require('chai').expect;
 var stubs = require('./Stubs');
@@ -68,11 +69,12 @@ describe('Node Server Request Listener Function', function() {
 
     // Expect 201 Created response status
     expect(res._responseCode).to.equal(201);
-
+    console.log('error2: ' + res._ended);
     // Testing for a newline isn't a valid test
     // TODO: Replace with with a valid test
     // expect(res._data).to.equal(JSON.stringify('\n'));
     expect(res._ended).to.equal(true);
+ 
   });
 
   it('Should respond with messages that were previously posted', function() {
@@ -97,9 +99,7 @@ describe('Node Server Request Listener Function', function() {
     var messages = JSON.parse(res._data).results;
     expect(messages.length).to.be.above(0);
     expect(messages[0].username).to.equal('Jono');
-    console.log('Jono??? : ' + messages[0].username)
     expect(messages[0].text).to.equal('Do my bidding!');
-    console.log('Do my bidding??? : ' + messages[0].text)
     expect(res._ended).to.equal(true);
   });
 

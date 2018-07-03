@@ -13,7 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var messages = {
-  results:[]
+  results : []
 };
 
 
@@ -59,22 +59,19 @@ var requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   
-
-  if(request.method === 'POST' && request.url === '/classes/messages') {
+  // when POST method called with desired URL, then...
+  if (request.method === 'POST' && request.url === '/classes/messages') {
     response.writeHead(201, headers);
     var data = '';
     request.on('data', (chunk) => {
-      console.log(data);
       data += chunk;
-      console.log(data);
     }).on('end', () => {
       data = JSON.parse(data);
       messages.results.push(data);
-      console.log(messages);
-    })
+      response.end('');
+    });
     
-  } else if(request.method === 'GET' && request.url === '/classes/messages') {
-  // output messages 
+  } else if (request.method === 'GET' && request.url === '/classes/messages') {
     response.writeHead(200, headers);
     response.end(JSON.stringify(messages));
   } else {
