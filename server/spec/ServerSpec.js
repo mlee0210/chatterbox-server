@@ -97,7 +97,9 @@ describe('Node Server Request Listener Function', function() {
     var messages = JSON.parse(res._data).results;
     expect(messages.length).to.be.above(0);
     expect(messages[0].username).to.equal('Jono');
+    console.log('Jono??? : ' + messages[0].username)
     expect(messages[0].text).to.equal('Do my bidding!');
+    console.log('Do my bidding??? : ' + messages[0].text)
     expect(res._ended).to.equal(true);
   });
 

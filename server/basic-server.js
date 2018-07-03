@@ -5,9 +5,9 @@ var http = require('http');
 
 var url = require('url');
 
-var routes = {
-  '/classes/messages': handler
-}
+// var routes = {
+//   '/classes/messages': handler
+// };
 
 
 // Every server needs to listen on a port with a unique number. The

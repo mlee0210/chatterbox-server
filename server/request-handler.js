@@ -12,6 +12,9 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var messages = {
+  results:[]
+};
 
 
 var requestHandler = function(request, response) {
@@ -34,6 +37,14 @@ var requestHandler = function(request, response) {
   var statusCode = 200;
 
   // See the note below about CORS headers.
+
+  var defaultCorsHeaders = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'POST, GET, PUT, DELETE, OPTIONS',
+    'access-control-allow-headers': 'content-type, accept',
+    'access-control-max-age': 10 // Seconds.
+  };
+
   var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
@@ -45,10 +56,33 @@ var requestHandler = function(request, response) {
   headers['Content-Type'] = 'text/plain';
   //headers['Content-Type'] = 'application/json';
   
-
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  
+
+  if(request.method === 'POST' && request.url === '/classes/messages') {
+    response.writeHead(201, headers);
+    var data = '';
+    request.on('data', (chunk) => {
+      console.log(data);
+      data += chunk;
+      console.log(data);
+    }).on('end', () => {
+      data = JSON.parse(data);
+      messages.results.push(data);
+      console.log(messages);
+    })
+    
+  } else if(request.method === 'GET' && request.url === '/classes/messages') {
+  // output messages 
+    response.writeHead(200, headers);
+    response.end(JSON.stringify(messages));
+  } else {
+    response.writeHead(404, headers);
+    response.end('');
+  }
+
+  
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -57,7 +91,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, Dudesssss!' + request);
+  //response.end('If neither GET or POST');
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -69,12 +103,7 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
+
 
 exports.requestHandler = requestHandler;
 // exports.requestHandler = requestHandler;  
