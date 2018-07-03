@@ -3,8 +3,8 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:3000/?????????????/classes/messages',
-  // server: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+  server: 'http://127.0.0.1:8080/classes/messages',
+  //server: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -27,6 +27,7 @@ var app = {
     app.$roomSelect.on('change', app.handleRoomChange);
 
     // Fetch previous messages
+    //???
     app.startSpinner();
     app.fetch(false);
 
@@ -37,6 +38,7 @@ var app = {
   },
 
   send: function(message) {
+    
     app.startSpinner();
 
     // POST the message to the server
@@ -48,7 +50,7 @@ var app = {
       success: function (data) {
         // Clear messages input
         app.$message.val('');
-
+        console.log(data);
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
@@ -64,6 +66,7 @@ var app = {
       type: 'GET',
       data: { order: '-createdAt' },
       success: function(data) {
+        // console.log(data);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 

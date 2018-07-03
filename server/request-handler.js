@@ -12,6 +12,13 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'POST, GET, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
+
 var messages = {
   results : []
 };
@@ -38,12 +45,6 @@ var requestHandler = function(request, response) {
 
   // See the note below about CORS headers.
 
-  var defaultCorsHeaders = {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': 'POST, GET, PUT, DELETE, OPTIONS',
-    'access-control-allow-headers': 'content-type, accept',
-    'access-control-max-age': 10 // Seconds.
-  };
 
   var headers = defaultCorsHeaders;
 
@@ -53,33 +54,37 @@ var requestHandler = function(request, response) {
   // other than plain text, like JSON or HTML.
   
 
-  headers['Content-Type'] = 'text/plain';
-  //headers['Content-Type'] = 'application/json';
+  //headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
   
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   
   // when POST method called with desired URL, then...
-  if (request.method === 'POST' && request.url === '/classes/messages') {
-    response.writeHead(201, headers);
+  if (request.method === 'POST' && request.url.includes('/classes/messages')) {
     var data = '';
     request.on('data', (chunk) => {
       data += chunk;
-    }).on('end', () => {
+    });
+    request.on('end', () => {
       data = JSON.parse(data);
       messages.results.push(data);
-      response.end('');
+      response.writeHead(201, headers);
+      response.end(JSON.stringify(messages));
     });
     
-  } else if (request.method === 'GET' && request.url === '/classes/messages') {
+  } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
     response.writeHead(200, headers);
     response.end(JSON.stringify(messages));
+
+  } else if (request.method === 'OPTIONS' && request.url.includes('/classes/messages')) {
+    response.writeHead(200, headers);
+    response.end('OK');
+
   } else {
     response.writeHead(404, headers);
-    response.end('');
+    response.end(JSON.stringify(messages));
   }
-
-  
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
