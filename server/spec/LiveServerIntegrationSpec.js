@@ -73,5 +73,20 @@ describe('server', function() {
     });
   });
 
+  it('Should 418 when asked for a teaport', function(done) {
+    var requestParams = {method: 'DoubleDoubleInNOut', 
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Ross',
+        text: 'Rachel owns me money'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
 
 });

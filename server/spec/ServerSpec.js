@@ -147,5 +147,23 @@ describe('Node Server Request Listener Function', function() {
     
   });
 
+  it('Should get the right with messages', function() {
+    var testMsg = {
+      username: 'Olaf',
+      text: 'Do you want to build a snowman?'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', testMsg);
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+    handler.requestHandler(req, res);
+    var messages = JSON.parse(res._data).results;
+    expect(messages[3].username).to.equal('Olaf');
+    expect(messages[3].text).to.equal('Do you want to build a snowman?');
+    expect(res._ended).to.equal(true);
+    
+  });
+
 
 });

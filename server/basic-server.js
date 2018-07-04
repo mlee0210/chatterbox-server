@@ -1,5 +1,5 @@
 var handler = require('./request-handler.js');
-
+const fs = require('fs');
 /* Import node's http module: */
 var http = require('http');
 
@@ -22,6 +22,14 @@ var port = 3000;
 // we'll have it listen on the IP address 127.0.0.1, which is a
 // special address that always refers to localhost.
 var ip = '127.0.0.1';
+
+
+
+// fs.unlink('/tmp/hello', function (err) => {
+//   if (err) throw err;
+//   console.log('successfully removed /tmp/hello')
+// })
+
 
 
 

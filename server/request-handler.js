@@ -14,7 +14,7 @@ this file and include it in basic-server.js so that it actually works.
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'POST, GET, PUT, DELETE, OPTIONS',
+  'access-control-allow-methods': 'POST, GET, PUT, DELETE, OPTIONS, DoubleDoubleInNOut',
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
@@ -73,6 +73,9 @@ var requestHandler = function(request, response) {
       response.end(JSON.stringify(messages));
     });
     
+  } else if (request.method === 'DoubleDoubleInNOut') {
+    response.writeHead(418, headers);
+    response.end("I'm a teapot");
   } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
     response.writeHead(200, headers);
     response.end(JSON.stringify(messages));
@@ -81,10 +84,7 @@ var requestHandler = function(request, response) {
     response.writeHead(200, headers);
     response.end('OK');
 
-  } else if (request.method === 'DoubleDoubleInNOut') {
-    response.writeHead(418, headers);
-    response.end("I'm a teapot");
-  } else {
+  }  else {
     response.writeHead(404, headers);
     response.end(JSON.stringify(messages));
   }
