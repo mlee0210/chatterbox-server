@@ -81,6 +81,9 @@ var requestHandler = function(request, response) {
     response.writeHead(200, headers);
     response.end('OK');
 
+  } else if (request.method === 'DoubleDoubleInNOut') {
+    response.writeHead(418, headers);
+    response.end("I'm a teapot");
   } else {
     response.writeHead(404, headers);
     response.end(JSON.stringify(messages));

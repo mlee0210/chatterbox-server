@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:8080/classes/messages',
+  server: 'http://127.0.0.1:3000/classes/messages',
   //server: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
@@ -20,26 +20,30 @@ var app = {
     app.$chats = $('#chats');
     app.$roomSelect = $('#roomSelect');
     app.$send = $('#send');
+    app.$refresh = $('#refresh');
+
 
     // Add listeners
     app.$chats.on('click', '.username', app.handleUsernameClick);
     app.$send.on('submit', app.handleSubmit);
     app.$roomSelect.on('change', app.handleRoomChange);
+    app.$refresh.on('click', app.handleRefresh);
 
     // Fetch previous messages
     //???
-    app.startSpinner();
+    // app.startSpinner();
     app.fetch(false);
 
     // Poll for new messages
     setInterval(function() {
+
       app.fetch(true);
     }, 3000);
   },
 
   send: function(message) {
     
-    app.startSpinner();
+    // app.startSpinner();
 
     // POST the message to the server
     $.ajax({
@@ -50,9 +54,10 @@ var app = {
       success: function (data) {
         // Clear messages input
         app.$message.val('');
-        console.log(data);
+        // console.log(data);
         // Trigger a fetch to update the messages, pass true to animate
-        app.fetch();
+        app.fetch(true);
+
       },
       error: function (error) {
         console.error('chatterbox: Failed to send message', error);
@@ -64,9 +69,9 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { order: '-createdAt' },
+      data: { order: '-updatedAt' },
       success: function(data) {
-        // console.log(data);
+
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 
@@ -75,6 +80,8 @@ var app = {
 
         // Get the last message
         var mostRecentMessage = data.results[data.results.length - 1];
+        
+        app.renderMessages(app.messages);
 
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId) {
@@ -169,7 +176,7 @@ var app = {
     $message.text(message.text).appendTo($chat);
 
     // Add the message to the UI
-    app.$chats.append($chat);
+    app.$chats.prepend($chat);
 
   },
 
@@ -226,6 +233,11 @@ var app = {
 
     // Stop the form from submitting
     event.preventDefault();
+  },
+
+  handleRefresh: function(event) {
+    app.renderMessages(app.messages);
+    // app.init();
   },
 
   startSpinner: function() {

@@ -92,9 +92,7 @@ describe('Node Server Request Listener Function', function() {
     // Now if we request the log for that room the message we posted should be there:
     req = new stubs.request('/classes/messages', 'GET');
     res = new stubs.response();
-
     handler.requestHandler(req, res);
-
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data).results;
     expect(messages.length).to.be.above(0);
@@ -102,14 +100,10 @@ describe('Node Server Request Listener Function', function() {
     expect(messages[0].text).to.equal('Do my bidding!');
     expect(res._ended).to.equal(true);
   });
-
-
   it('Should 404 when asked for a nonexistent file', function() {
     var req = new stubs.request('/arglebargle', 'GET');
     var res = new stubs.response();
-
     handler.requestHandler(req, res);
-
     // Wait for response to return and then check status code
     waitForThen(
       function() { return res._ended; },
@@ -117,5 +111,41 @@ describe('Node Server Request Listener Function', function() {
         expect(res._responseCode).to.equal(404);
       });
   });
+
+
+  it('Should render the proper text', function() {
+    var testMsg = {
+      username: 'Brady',
+      text: 'Do the Home Run thing'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', testMsg);
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+    handler.requestHandler(req, res);
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(1);
+    expect(messages[2].username).to.equal('Brady');
+    expect(messages[2].text).to.equal('Do the Home Run thing');
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should return the 418 error', function() {
+    var testMsg = {
+      username: 'Olaf',
+      text: 'Do you want to build a snowman?'
+    };
+    var req = new stubs.request('/classes/messages', 'DoubleDoubleInNOut', testMsg);
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(418);
+    
+  });
+
 
 });
